@@ -8,16 +8,21 @@ using namespace std;
 class TicTacToe
 {
 	private:
-		char mSquareContents[ 9 ];
+		char mSquareContents[ 3 ][ 3 ];
 
 	public:
 		TicTacToe()
 		{
-			for( int index = 0; index < 9; index++ )
+			int squareValue = 1;
+			for( int indexOuter = 0; indexOuter < 3; indexOuter++ )
 			{
-				ostringstream os;
-				os << (index + 1);
-				mSquareContents[index] = (os.str())[0];// Since it is a null-terminated string, the first index has the character
+				for(int indexInner = 0; indexInner < 3; indexInner++) 
+				{
+					ostringstream os;
+					os << squareValue;
+					mSquareContents[indexOuter][indexInner] = (os.str())[0];// Since it is a null-terminated string, the first index has the character
+					squareValue++;
+				}	
 			}
 		}
 		friend ostream& operator<<(ostream& out, const TicTacToe& t);
@@ -25,25 +30,29 @@ class TicTacToe
 ostream& operator<<(ostream& out, const TicTacToe& t)
 {
 	out << '\n';
-	for(int index = 0; index < 9; index++)
-	{
-		if(index % 3 == 0)
-		{
-			out << ' ' << t.mSquareContents[index] <<
-			 " | " << t.mSquareContents[index + 1] << " | " <<  
-			 t.mSquareContents[index + 2] << '\n';
-	 		for(int num = 1; num <= 11 && index != 6; num++)
-	 		{
-	 			if(num % 4 == 0)
-	 				out << '+';
- 				else
- 					out << '-';
+	for( int indexOuter = 0; indexOuter < 3; indexOuter++ )
+			{
+				for(int indexInner = 0; indexInner < 3; indexInner++)
+				{
+					if(indexInner == 0)
+					{
+						out << ' ' << t.mSquareContents[indexOuter][indexInner] <<
+			 			" | " << t.mSquareContents[indexOuter][indexInner + 1] << " | " <<  
+			 			t.mSquareContents[indexOuter][indexInner + 2] << '\n';
+	 					for(int num = 1; num <= 11 && indexOuter != 2; num++)
+	 					{
+	 						if(num % 4 == 0)
+	 							out << '+';
+ 							else
+ 								out << '-';
+						}
+						out << '\n';
+					}
+				}
 			}
-		out << '\n';
-		}
-	}
 	out << '\n';
 	return out;
+
 }	    		
 
 
