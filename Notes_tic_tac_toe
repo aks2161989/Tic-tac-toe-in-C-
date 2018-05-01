@@ -1,0 +1,20 @@
+Tic tac toe Notes
+
+Display:
+	cout << " 1 | 2 | 3\n";
+	cout << "---+---+---\n";
+	cout << " 4 | 5 | 6\n";
+	cout << "---+---+---\n";
+	cout << " 7 | 8 | 9\n";
+
+Computer Playing Strategy:
+In decreasing priority - 
+
+1. Enter a character to complete a line in a single step
+2. Prevent player from completing a line in immediate next step
+3. Start a 	GUARANTEED winning strategy
+	If computer starts first, mark the central square
+	If the player subsequently marks non-corner square, then mark a square that forms an 'L' with the player's square
+	If player marks another square to complete a horizontal/vertical line, mark the	last square of the line
+	Now the player will mark some square, but if above steps work, then you can complete a line in a single step and win
+
