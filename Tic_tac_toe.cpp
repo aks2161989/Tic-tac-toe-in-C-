@@ -2,8 +2,17 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
+
+int getRandomNumber(int min, int max)
+{
+	static const double fraction = 1.0 / (RAND_MAX + 1.0);
+	return min + static_cast<int>((max - min + 1) * (rand() * fraction));
+}
 
 class TicTacToe
 {
@@ -12,6 +21,7 @@ class TicTacToe
 		char playerChoice;
 		char computerChoice;
 		char playerChar;
+		char computerChar;
 		char digitArr[9] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
 			
 	public:
@@ -30,6 +40,7 @@ class TicTacToe
 			}
 			
 			playerChar = 'X';
+			computerChar = 'O';
 		}
 		friend ostream& operator<<(ostream& out, const TicTacToe& t);
 		void updateGrid(char character)
@@ -65,11 +76,41 @@ class TicTacToe
 				this->takePlayerChoice();
 			}
 		}
+		void takeComputerChoice()//WORKING ON THIS
+		{
+			srand(static_cast<unsigned int>(time(0)));
+			int vacancyCount = 0;// Number of vacant squares in grid
+			vector<int> outerIndexes;
+			vector<int> innerIndexes;
+			for(int indexOuter = 0; indexOuter < 3; indexOuter++)
+			{
+				for(int indexInner = 0; indexInner < 3; indexInner++)
+				{
+					if(mSquareContents[indexOuter][indexInner] != 'X' && mSquareContents[indexOuter][indexInner] != 'O')
+					{
+						vacancyCount++;
+						outerIndexes.push_back(indexOuter);
+						innerIndexes.push_back(indexInner);
+					}
+				}
+			}
+			int randomIndex = getRandomNumber ( 0, vacancyCount - 1);
+			mSquareContents[ outerIndexes[randomIndex] ] [ innerIndexes[randomIndex] ] = computerChar; 	
+		}
 		void play()
 		{
 			cout << *this;
-			this->takePlayerChoice();
-			this->updateGrid(playerChar);
+			
+			if(!this->isFull())
+			{
+				this->takePlayerChoice();
+				this->updateGrid(playerChar);
+			}
+			if(!this->isFull())
+			{
+				this->takeComputerChoice();
+				this->updateGrid(computerChar);
+			}
 		}
 		bool isFull()
 		{
@@ -115,8 +156,6 @@ ostream& operator<<(ostream& out, const TicTacToe& t)
 	return out;
 
 }	    		
-
-
 int main()
 {
 	TicTacToe t;
