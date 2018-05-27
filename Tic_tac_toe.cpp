@@ -115,7 +115,7 @@ class TicTacToe
 						cout << "\n\tYOU WIN!\n";
 					else
 						cout << "\n\tYOU LOSE!\n";
-					throw 0;
+					throw 0; //Since the game is over, lets exit
 				}
 			}
 			
@@ -127,7 +127,7 @@ class TicTacToe
 						cout << "\n\tYOU WIN!\n";
 					else
 						cout << "\n\tYOU LOSE!\n";
-					throw 1;
+					throw 0; //Since the game is over, lets exit
 				}
 			}
 			
@@ -137,7 +137,7 @@ class TicTacToe
 					cout << "\n\tYOU WIN!\n";
 				else
 					cout << "\n\tYOU LOSE!\n";
-				throw 2;
+				throw 0; //Since the game is over, lets exit
 			}
 			
 			if( mSquareContents[0][2] == mSquareContents[1][1] && mSquareContents[1][1] == mSquareContents[2][0] ) //Checking victory condition 4
@@ -146,14 +146,14 @@ class TicTacToe
 					cout << "\n\tYOU WIN!\n";
 				else
 					cout << "\n\tYOU LOSE!\n";
-				throw 3;
+				throw 0; //Since the game is over, lets exit
 			}
 			
 			/* If all above conditions fail, i.e., if no one wins and if all vacancies are full, the game is a draw*/
 			if( this->isFull() )
 			{
 				cout << "\n\tTHE GAME IS A DRAW!\n";
-				throw 4;
+				throw 0; //Since the game is over, lets exit
 			}
 		}
 		void play()
