@@ -76,7 +76,7 @@ class TicTacToe
 				this->takePlayerChoice();
 			}
 		}
-		void takeComputerChoice()//WORKING ON THIS
+		void takeComputerChoice()
 		{
 			srand(static_cast<unsigned int>(time(0)));
 			int vacancyCount = 0;// Number of vacant squares in grid
@@ -97,6 +97,65 @@ class TicTacToe
 			int randomIndex = getRandomNumber ( 0, vacancyCount - 1);
 			mSquareContents[ outerIndexes[randomIndex] ] [ innerIndexes[randomIndex] ] = computerChar; 	
 		}
+		void checkVictory() //WORKING ON THIS
+		{
+			/*
+			Victory occurs when:
+				1. Horizontal match is found: array1[outer][inner] == array2[outer][inner+1] == array3[outer][inner+2], or
+				2. Vertical match is found: array1[outer][inner] == array2[outer+1][inner] == array3[outer+2][inner], or
+				3. Right sloping diagonal is found: array1[outer][inner] == array2[outer+1][inner+1] == array3[outer+2][inner+2], or
+				4. Left sloping diagonal is found: array1[outer][inner] == array2[outer+1][inner-1] == array3[outer+2][inner-2]
+			*/
+			
+			for(int outerIndex = 0; outerIndex < 3; outerIndex++) //Checking victory condition 1
+			{
+				if( mSquareContents[outerIndex][0] == mSquareContents[outerIndex][1] && mSquareContents[outerIndex][1]== mSquareContents[outerIndex][2] )
+				{
+					if( mSquareContents[outerIndex][0] == playerChar )
+						cout << "\n\tYOU WIN!\n";
+					else
+						cout << "\n\tYOU LOSE!\n";
+					throw 0;
+				}
+			}
+			
+			for(int innerIndex = 0; innerIndex < 3; innerIndex++) //Checking victory condition 2
+			{
+				if( mSquareContents[0][innerIndex] == mSquareContents[1][innerIndex] && mSquareContents[1][innerIndex] == mSquareContents[2][innerIndex] )
+				{
+					if( mSquareContents[0][innerIndex] == playerChar )
+						cout << "\n\tYOU WIN!\n";
+					else
+						cout << "\n\tYOU LOSE!\n";
+					throw 1;
+				}
+			}
+			
+			if( mSquareContents[0][0] == mSquareContents[1][1] && mSquareContents[1][1] == mSquareContents[2][2] ) //Checking victory condition 3
+			{
+				if( mSquareContents[0][0] == playerChar )
+					cout << "\n\tYOU WIN!\n";
+				else
+					cout << "\n\tYOU LOSE!\n";
+				throw 2;
+			}
+			
+			if( mSquareContents[0][2] == mSquareContents[1][1] && mSquareContents[1][1] == mSquareContents[2][0] ) //Checking victory condition 4
+			{
+				if( mSquareContents[0][2] == playerChar )
+					cout << "\n\tYOU WIN!\n";
+				else
+					cout << "\n\tYOU LOSE!\n";
+				throw 3;
+			}
+			
+			/* If all above conditions fail, i.e., if no one wins and if all vacancies are full, the game is a draw*/
+			if( this->isFull() )
+			{
+				cout << "\n\tTHE GAME IS A DRAW!\n";
+				throw 4;
+			}
+		}
 		void play()
 		{
 			cout << *this;
@@ -105,12 +164,16 @@ class TicTacToe
 			{
 				this->takePlayerChoice();
 				this->updateGrid(playerChar);
+				this->checkVictory();
 			}
+			
 			if(!this->isFull())
 			{
 				this->takeComputerChoice();
 				this->updateGrid(computerChar);
+				this->checkVictory();
 			}
+			
 		}
 		bool isFull()
 		{
@@ -159,9 +222,15 @@ ostream& operator<<(ostream& out, const TicTacToe& t)
 int main()
 {
 	TicTacToe t;
-	while(!t.isFull())
-		t.play();
-	cout << t;
-			
+	try
+	{
+		while(!t.isFull())
+			t.play();
+		cout << t;
+	}
+	catch(int)
+	{
+		cout << t;
+	}		
 	return 0;
 }
