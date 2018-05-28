@@ -23,6 +23,9 @@ class TicTacToe
 		char playerChar;
 		char computerChar;
 		char digitArr[9] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+		int vacancyCount;
+		vector<int> outerIndexes;
+		vector<int> innerIndexes;
 			
 	public:
 		TicTacToe()
@@ -76,12 +79,12 @@ class TicTacToe
 				this->takePlayerChoice();
 			}
 		}
-		void takeComputerChoice()
+		void countVacancies()
 		{
+			outerIndexes.clear();
+			innerIndexes.clear();
 			srand(static_cast<unsigned int>(time(0)));
-			int vacancyCount = 0;// Number of vacant squares in grid
-			vector<int> outerIndexes;
-			vector<int> innerIndexes;
+			vacancyCount = 0;// Number of vacant squares in grid
 			for(int indexOuter = 0; indexOuter < 3; indexOuter++)
 			{
 				for(int indexInner = 0; indexInner < 3; indexInner++)
@@ -94,10 +97,18 @@ class TicTacToe
 					}
 				}
 			}
-			int randomIndex = getRandomNumber ( 0, vacancyCount - 1);
-			mSquareContents[ outerIndexes[randomIndex] ] [ innerIndexes[randomIndex] ] = computerChar; 	
 		}
-		void checkVictory() //WORKING ON THIS
+		void levelEasy()
+		{
+			int randomIndex = getRandomNumber ( 0, vacancyCount - 1);
+			mSquareContents[ outerIndexes[randomIndex] ] [ innerIndexes[randomIndex] ] = computerChar;
+		}
+		void takeComputerChoice()
+		{
+			countVacancies();
+			levelEasy(); 	
+		}
+		void checkVictory() 
 		{
 			/*
 			Victory occurs when:
