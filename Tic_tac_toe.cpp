@@ -26,6 +26,8 @@ class TicTacToe
 		int vacancyCount;
 		vector<int> outerIndexes;
 		vector<int> innerIndexes;
+		enum playerName { COMPUTER, PLAYER };
+		enum outcome { WIN, LOSE, DRAW }; //WIN: player wins, LOSE: player loses
 			
 	public:
 		TicTacToe()
@@ -98,7 +100,7 @@ class TicTacToe
 				}
 			}
 		}
-		void levelEasy()
+		void levelEasy() // 'Easy' difficulty
 		{
 			int randomIndex = getRandomNumber ( 0, vacancyCount - 1);
 			mSquareContents[ outerIndexes[randomIndex] ] [ innerIndexes[randomIndex] ] = computerChar;
@@ -108,7 +110,7 @@ class TicTacToe
 			countVacancies();
 			levelEasy(); 	
 		}
-		void checkVictory() 
+		outcome checkVictory() 
 		{
 			/*
 			Victory occurs when:
@@ -123,10 +125,15 @@ class TicTacToe
 				if( mSquareContents[outerIndex][0] == mSquareContents[outerIndex][1] && mSquareContents[outerIndex][1]== mSquareContents[outerIndex][2] )
 				{
 					if( mSquareContents[outerIndex][0] == playerChar )
+					{
 						cout << "\n\tYOU WIN!\n";
+						return WIN;
+					}
 					else
+					{
 						cout << "\n\tYOU LOSE!\n";
-					throw 0; //Since the game is over, lets exit
+						return LOSE;
+					}
 				}
 			}
 			
@@ -135,54 +142,82 @@ class TicTacToe
 				if( mSquareContents[0][innerIndex] == mSquareContents[1][innerIndex] && mSquareContents[1][innerIndex] == mSquareContents[2][innerIndex] )
 				{
 					if( mSquareContents[0][innerIndex] == playerChar )
+					{
 						cout << "\n\tYOU WIN!\n";
+						return WIN;
+					}
 					else
+					{
 						cout << "\n\tYOU LOSE!\n";
-					throw 0; //Since the game is over, lets exit
+						return LOSE;
+					}
 				}
 			}
 			
 			if( mSquareContents[0][0] == mSquareContents[1][1] && mSquareContents[1][1] == mSquareContents[2][2] ) //Checking victory condition 3
 			{
 				if( mSquareContents[0][0] == playerChar )
-					cout << "\n\tYOU WIN!\n";
+				{
+						cout << "\n\tYOU WIN!\n";
+						return WIN;
+				}
 				else
-					cout << "\n\tYOU LOSE!\n";
-				throw 0; //Since the game is over, lets exit
+				{
+						cout << "\n\tYOU LOSE!\n";
+						return LOSE;
+				}
 			}
 			
 			if( mSquareContents[0][2] == mSquareContents[1][1] && mSquareContents[1][1] == mSquareContents[2][0] ) //Checking victory condition 4
 			{
 				if( mSquareContents[0][2] == playerChar )
-					cout << "\n\tYOU WIN!\n";
+				{
+						cout << "\n\tYOU WIN!\n";
+						return WIN;
+				}
 				else
-					cout << "\n\tYOU LOSE!\n";
-				throw 0; //Since the game is over, lets exit
+				{
+						cout << "\n\tYOU LOSE!\n";
+						return LOSE;
+				}
 			}
 			
 			/* If all above conditions fail, i.e., if no one wins and if all vacancies are full, the game is a draw*/
 			if( this->isFull() )
 			{
 				cout << "\n\tTHE GAME IS A DRAW!\n";
-				throw 0; //Since the game is over, lets exit
+				return DRAW;
 			}
 		}
 		void play()
 		{
 			cout << *this;
 			
-			if(!this->isFull())
+			if(!this->isFull()) //Player's move
 			{
 				this->takePlayerChoice();
 				this->updateGrid(playerChar);
-				this->checkVictory();
+				switch( this->checkVictory() )
+				{
+					case WIN:
+					case LOSE:
+					case DRAW:
+						throw 0;
+				}
+				
 			}
 			
-			if(!this->isFull())
+			if(!this->isFull()) //Computer's move
 			{
 				this->takeComputerChoice();
 				this->updateGrid(computerChar);
-				this->checkVictory();
+				switch( this->checkVictory() )
+				{
+					case WIN:
+					case LOSE:
+					case DRAW:
+						throw 0;
+				}
 			}
 			
 		}
