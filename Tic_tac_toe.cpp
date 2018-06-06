@@ -28,9 +28,12 @@ class TicTacToe
 		vector<int> innerIndexes;
 		enum playerName { COMPUTER, PLAYER };
 		enum outcome { WIN, LOSE, DRAW }; //WIN: player wins, LOSE: player loses
+		enum chosenDifficulty { EASY, MEDIUM };
+		chosenDifficulty m_Difficulty;
 			
 	public:
-		TicTacToe()
+		TicTacToe( int difficulty = 1 )
+		: m_Difficulty( static_cast<chosenDifficulty>(difficulty) )
 		{
 			int squareValue = 1;
 			for( int indexOuter = 0; indexOuter < 3; indexOuter++ )
@@ -100,6 +103,127 @@ class TicTacToe
 				}
 			}
 		}
+		bool checkPotentialVictory(playerName pn) //Blocks player from winning in next turn OR makes computer win in next turn
+		{
+			char currentChar;
+			char temp;
+			
+			if (pn == COMPUTER)
+				currentChar = computerChar;
+			else
+				currentChar = playerChar;
+				
+			for (int index = 0; index < outerIndexes.size(); index++)
+			{
+				temp = mSquareContents[ outerIndexes[index] ] [ innerIndexes[index] ];
+				mSquareContents[ outerIndexes[index] ] [ innerIndexes[index] ] = currentChar;
+				switch( checkVictory() )
+				{
+					case WIN:
+						mSquareContents[ outerIndexes[index] ] [ innerIndexes[index] ] = computerChar;
+						return true;
+					case LOSE:
+						return true; // If the marked square results in a win or loss, let the marked square be... 
+					default:
+						mSquareContents[ outerIndexes[index] ] [ innerIndexes[index] ] = temp; // ...else reverse the change
+				}
+			}
+			return false;			
+		}
+		void levelMedium()
+		{
+			/*First check if computer can win in next turn*/
+			if (checkPotentialVictory( COMPUTER ))
+				return;
+			/*If not, check if player can win in next turn. If yes, block his move*/
+			if (checkPotentialVictory( PLAYER ))
+				return;
+			
+			/*If computer has played before, mark a square on the same line so that line can be completed in future turns*/
+			
+			
+			int earlierMarked[2] {0};
+			for(int outer = 0; outer < 3; outer++)
+			{
+				for(int inner = 0; inner < 3; inner++)
+				{
+					if( mSquareContents[outer][inner] == computerChar )
+					{
+						earlierMarked[0] = outer; //Save the index of square marked earlier by the computer
+						earlierMarked[1] = inner;
+						break;
+					}
+				}
+				if(earlierMarked[0] != 0) break;
+			}
+			
+			int vacanciesOnSameLine[2][2] {100};
+			for(int outer = 0; outer < outerIndexes.size(); outer++) 
+			{
+				for(int compareWith = outer+1; compareWith < outerIndexes.size(); compareWith++)
+				{
+					if(outerIndexes[outer] == outerIndexes[compareWith] && outerIndexes[outer] == earlierMarked[0]) //Horizontal vacancies from left to right
+					{
+						vacanciesOnSameLine[0][0] = outerIndexes[outer];
+						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+						vacanciesOnSameLine[1][0] = innerIndexes[outer];
+						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+					}
+					else if(outerIndexes[compareWith] == outerIndexes[outer]+1 && outerIndexes[compareWith] == earlierMarked[0]+2)// Vertical and diagonal vacancies from top to bottom
+					{
+						vacanciesOnSameLine[0][0] = outerIndexes[outer];
+						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+						vacanciesOnSameLine[1][0] = innerIndexes[outer];
+						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+					}
+					else if(outerIndexes[compareWith] == outerIndexes[outer]+2 && outerIndexes[compareWith] == earlierMarked[0]+1)// Vertical and diagonal vacancies from top to bottom with earlied marked square in middle
+					{
+						vacanciesOnSameLine[0][0] = outerIndexes[outer];
+						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+						vacanciesOnSameLine[1][0] = innerIndexes[outer];
+						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+					}
+				}
+					
+			}
+			for(int outer = outerIndexes.size()-1; outer >= 0 ; outer--) 
+			{
+				for(int compareWith = outer-1; compareWith >= 0; compareWith--)
+				{
+					if(outerIndexes[outer] == outerIndexes[compareWith] && outerIndexes[outer] == earlierMarked[0]) //Horizontal vacancies from right to left
+					{
+						vacanciesOnSameLine[0][0] = outerIndexes[outer];
+						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+						vacanciesOnSameLine[1][0] = innerIndexes[outer];
+						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+					}
+					else if(outerIndexes[compareWith] == outerIndexes[outer]-1 && outerIndexes[compareWith] == earlierMarked[0]-2)// Vertical and diagonal vacancies from bottom to top
+					{
+						vacanciesOnSameLine[0][0] = outerIndexes[outer];
+						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+						vacanciesOnSameLine[1][0] = innerIndexes[outer];
+						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+					}
+					else if(outerIndexes[compareWith] == outerIndexes[outer]-2 && outerIndexes[compareWith] == earlierMarked[0]-1)// Vertical and diagonal vacancies from bottom to top when earlier marked square is in middle
+					{
+						vacanciesOnSameLine[0][0] = outerIndexes[outer];
+						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+						vacanciesOnSameLine[1][0] = innerIndexes[outer];
+						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+					}
+				}
+					
+			}
+			if( vacanciesOnSameLine[0][0] != 100 )
+			{
+				int randomIndex = getRandomNumber( 0, 1 );
+				mSquareContents[vacanciesOnSameLine[0][randomIndex]][vacanciesOnSameLine[1][randomIndex]] = computerChar;
+				return;
+			}			
+			/*If none of the above is applicable, just mark a square randomly*/	
+			int randomIndex = getRandomNumber(0, outerIndexes.size()-1);
+			mSquareContents[ outerIndexes[randomIndex] ][ innerIndexes[randomIndex] ] = computerChar;
+		}
 		void levelEasy() // 'Easy' difficulty
 		{
 			int randomIndex = getRandomNumber ( 0, vacancyCount - 1);
@@ -108,7 +232,15 @@ class TicTacToe
 		void takeComputerChoice()
 		{
 			countVacancies();
-			levelEasy(); 	
+			
+			switch( m_Difficulty )
+			{
+			case EASY:
+				levelEasy();
+				break;
+			case MEDIUM:
+				levelMedium();
+			}	 	
 		}
 		outcome checkVictory() 
 		{
@@ -126,12 +258,10 @@ class TicTacToe
 				{
 					if( mSquareContents[outerIndex][0] == playerChar )
 					{
-						cout << "\n\tYOU WIN!\n";
 						return WIN;
 					}
 					else
 					{
-						cout << "\n\tYOU LOSE!\n";
 						return LOSE;
 					}
 				}
@@ -143,12 +273,10 @@ class TicTacToe
 				{
 					if( mSquareContents[0][innerIndex] == playerChar )
 					{
-						cout << "\n\tYOU WIN!\n";
 						return WIN;
 					}
 					else
 					{
-						cout << "\n\tYOU LOSE!\n";
 						return LOSE;
 					}
 				}
@@ -158,12 +286,10 @@ class TicTacToe
 			{
 				if( mSquareContents[0][0] == playerChar )
 				{
-						cout << "\n\tYOU WIN!\n";
 						return WIN;
 				}
 				else
 				{
-						cout << "\n\tYOU LOSE!\n";
 						return LOSE;
 				}
 			}
@@ -172,12 +298,10 @@ class TicTacToe
 			{
 				if( mSquareContents[0][2] == playerChar )
 				{
-						cout << "\n\tYOU WIN!\n";
 						return WIN;
 				}
 				else
 				{
-						cout << "\n\tYOU LOSE!\n";
 						return LOSE;
 				}
 			}
@@ -185,7 +309,6 @@ class TicTacToe
 			/* If all above conditions fail, i.e., if no one wins and if all vacancies are full, the game is a draw*/
 			if( this->isFull() )
 			{
-				cout << "\n\tTHE GAME IS A DRAW!\n";
 				return DRAW;
 			}
 		}
@@ -200,8 +323,13 @@ class TicTacToe
 				switch( this->checkVictory() )
 				{
 					case WIN:
+						cout << "\n\tYOU WIN!\n";
+						throw 0;
 					case LOSE:
+						cout << "\n\tYOU LOSE!\n";
+						throw 0;
 					case DRAW:
+						cout << "\n\tTHE GAME IS A DRAW!\n";
 						throw 0;
 				}
 				
@@ -214,8 +342,13 @@ class TicTacToe
 				switch( this->checkVictory() )
 				{
 					case WIN:
+						cout << "\n\tYOU WIN!\n";
+						throw 0;
 					case LOSE:
+						cout << "\n\tYOU LOSE!\n";
+						throw 0;
 					case DRAW:
+						cout << "\n\tTHE GAME IS A DRAW!\n";
 						throw 0;
 				}
 			}
@@ -267,7 +400,26 @@ ostream& operator<<(ostream& out, const TicTacToe& t)
 }	    		
 int main()
 {
-	TicTacToe t;
+	
+	char difficulty;
+	int intDifficulty;
+	while( difficulty != 'E' && difficulty != 'e' && difficulty != 'M' && difficulty != 'm')
+	{
+		cout << "Choose a difficulty level (E-EASY, M-MEDIUM): ";
+		cin >> difficulty;
+		cin.ignore(32767, '\n');
+		if( cin.fail() )
+		{
+			cin.clear();
+			cin.ignore(32767, '\n');
+		}
+	}
+	if( difficulty == 'E'|| difficulty == 'e')
+		intDifficulty = 0;
+	else if( difficulty == 'M' || difficulty == 'm')
+		intDifficulty = 1;
+	TicTacToe t ( intDifficulty );
+		
 	try
 	{
 		while(!t.isFull())
