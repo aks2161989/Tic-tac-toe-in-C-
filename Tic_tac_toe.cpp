@@ -88,7 +88,6 @@ class TicTacToe
 		{
 			outerIndexes.clear();
 			innerIndexes.clear();
-			srand(static_cast<unsigned int>(time(0)));
 			vacancyCount = 0;// Number of vacant squares in grid
 			for(int indexOuter = 0; indexOuter < 3; indexOuter++)
 			{
@@ -142,7 +141,7 @@ class TicTacToe
 			/*If computer has played before, mark a square on the same line so that line can be completed in future turns*/
 			
 			
-			int earlierMarked[2] {0};
+			int earlierMarked[2] {100, 100};
 			for(int outer = 0; outer < 3; outer++)
 			{
 				for(int inner = 0; inner < 3; inner++)
@@ -157,7 +156,7 @@ class TicTacToe
 				if(earlierMarked[0] != 0) break;
 			}
 			
-			int vacanciesOnSameLine[2][2] {100};
+			int vacanciesOnSameLine[2][2] {{100, 100}, {100, 100}};
 			for(int outer = 0; outer < outerIndexes.size(); outer++) 
 			{
 				for(int compareWith = outer+1; compareWith < outerIndexes.size(); compareWith++)
@@ -221,12 +220,13 @@ class TicTacToe
 				return;
 			}			
 			/*If none of the above is applicable, just mark a square randomly*/	
-			int randomIndex = getRandomNumber(0, outerIndexes.size()-1);
+			
+			int randomIndex = getRandomNumber(0, outerIndexes.size() - 1);
 			mSquareContents[ outerIndexes[randomIndex] ][ innerIndexes[randomIndex] ] = computerChar;
 		}
 		void levelEasy() // 'Easy' difficulty
 		{
-			int randomIndex = getRandomNumber ( 0, vacancyCount - 1);
+			int randomIndex = getRandomNumber ( 0, outerIndexes.size() - 1);
 			mSquareContents[ outerIndexes[randomIndex] ] [ innerIndexes[randomIndex] ] = computerChar;
 		}
 		void takeComputerChoice()
@@ -400,7 +400,7 @@ ostream& operator<<(ostream& out, const TicTacToe& t)
 }	    		
 int main()
 {
-	
+	srand(static_cast<unsigned int>(time(0)));
 	char difficulty;
 	int intDifficulty;
 	while( difficulty != 'E' && difficulty != 'e' && difficulty != 'M' && difficulty != 'm')
