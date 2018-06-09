@@ -129,18 +129,8 @@ class TicTacToe
 			}
 			return false;			
 		}
-		void levelMedium()
+		void markOnSameLine()
 		{
-			/*First check if computer can win in next turn*/
-			if (checkPotentialVictory( COMPUTER ))
-				return;
-			/*If not, check if player can win in next turn. If yes, block his move*/
-			if (checkPotentialVictory( PLAYER ))
-				return;
-			
-			/*If computer has played before, mark a square on the same line so that line can be completed in future turns*/
-			
-			
 			int earlierMarked[2] {100, 100};
 			for(int outer = 0; outer < 3; outer++)
 			{
@@ -219,6 +209,20 @@ class TicTacToe
 				mSquareContents[vacanciesOnSameLine[0][randomIndex]][vacanciesOnSameLine[1][randomIndex]] = computerChar;
 				return;
 			}			
+		
+		}
+		void levelMedium()
+		{
+			/*First check if computer can win in next turn*/
+			if (checkPotentialVictory( COMPUTER ))
+				return;
+			/*If not, check if player can win in next turn. If yes, block his move*/
+			if (checkPotentialVictory( PLAYER ))
+				return;
+			
+			/*If computer has played before, mark a square on the same line so that line can be completed in future turns*/
+			markOnSameLine();
+			
 			/*If none of the above is applicable, just mark a square randomly*/	
 			
 			int randomIndex = getRandomNumber(0, outerIndexes.size() - 1);
