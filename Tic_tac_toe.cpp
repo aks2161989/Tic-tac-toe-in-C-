@@ -129,7 +129,7 @@ class TicTacToe
 			}
 			return false;			
 		}
-		void markOnSameLine()
+		bool markOnSameLine()
 		{
 			int earlierMarked[2] {100, 100};
 			for(int outer = 0; outer < 3; outer++)
@@ -205,11 +205,20 @@ class TicTacToe
 			}
 			if( vacanciesOnSameLine[0][0] != 100 )
 			{
+				cout << "Vacancies on same line: ";
+				for(int i=0; i < 2; i++)
+					cout << "(" << vacanciesOnSameLine[0][i] << ", " << vacanciesOnSameLine[1][i] << ") ";
+				cout << '\n';
+				cout << "Total vacancies are: ";
+				for(int i = 0; i < outerIndexes.size(); i++)
+					cout << "(" << outerIndexes[i] << ", " << innerIndexes[i] << ") ";
+				cout << '\n';
+				
 				int randomIndex = getRandomNumber( 0, 1 );
 				mSquareContents[vacanciesOnSameLine[0][randomIndex]][vacanciesOnSameLine[1][randomIndex]] = computerChar;
-				return;
-			}			
-		
+				return true;
+			}
+			return false;		
 		}
 		void levelMedium()
 		{
@@ -221,9 +230,15 @@ class TicTacToe
 				return;
 			
 			/*If computer has played before, mark a square on the same line so that line can be completed in future turns*/
-			markOnSameLine();
+			if( markOnSameLine() )
+				return;
 			
 			/*If none of the above is applicable, just mark a square randomly*/	
+			cout << "RANDOM\n";
+			cout << "Total vacancies are: ";
+			for(int i = 0; i < outerIndexes.size(); i++)
+				cout << "(" << outerIndexes[i] << ", " << innerIndexes[i] << ") ";
+			cout << '\n';
 			
 			int randomIndex = getRandomNumber(0, outerIndexes.size() - 1);
 			mSquareContents[ outerIndexes[randomIndex] ][ innerIndexes[randomIndex] ] = computerChar;
@@ -235,15 +250,15 @@ class TicTacToe
 		}
 		void takeComputerChoice()
 		{
-			countVacancies();
+			this->countVacancies();
 			
 			switch( m_Difficulty )
 			{
 			case EASY:
-				levelEasy();
+				this->levelEasy();
 				break;
 			case MEDIUM:
-				levelMedium();
+				this->levelMedium();
 			}	 	
 		}
 		outcome checkVictory() 
