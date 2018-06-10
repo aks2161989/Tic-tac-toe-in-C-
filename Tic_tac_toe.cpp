@@ -132,6 +132,7 @@ class TicTacToe
 		bool markOnSameLine()
 		{
 			int earlierMarked[2] {100, 100};
+			char temp1, temp2;
 			for(int outer = 0; outer < 3; outer++)
 			{
 				for(int inner = 0; inner < 3; inner++)
@@ -143,7 +144,7 @@ class TicTacToe
 						break;
 					}
 				}
-				if(earlierMarked[0] != 0) break;
+				if(earlierMarked[0] != 100) break;
 			}
 			
 			int vacanciesOnSameLine[2][2] {{100, 100}, {100, 100}};
@@ -153,24 +154,44 @@ class TicTacToe
 				{
 					if(outerIndexes[outer] == outerIndexes[compareWith] && outerIndexes[outer] == earlierMarked[0]) //Horizontal vacancies from left to right
 					{
-						vacanciesOnSameLine[0][0] = outerIndexes[outer];
-						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-						vacanciesOnSameLine[1][0] = innerIndexes[outer];
-						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							vacanciesOnSameLine[0][0] = outerIndexes[outer];
+							vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+							vacanciesOnSameLine[1][0] = innerIndexes[outer];
+							vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
 					}
 					else if(outerIndexes[compareWith] == outerIndexes[outer]+1 && outerIndexes[compareWith] == earlierMarked[0]+2)// Vertical and diagonal vacancies from top to bottom
 					{
-						vacanciesOnSameLine[0][0] = outerIndexes[outer];
-						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-						vacanciesOnSameLine[1][0] = innerIndexes[outer];
-						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							temp1 = mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ];
+							temp2 = mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ];
+							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = 
+							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
+							if( checkVictory() == LOSE )
+							{
+								cout << "A\n";
+								vacanciesOnSameLine[0][0] = outerIndexes[outer];
+								vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+								vacanciesOnSameLine[1][0] = innerIndexes[outer];
+								vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							}
+							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = temp1;
+							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = temp2;
 					}
 					else if(outerIndexes[compareWith] == outerIndexes[outer]+2 && outerIndexes[compareWith] == earlierMarked[0]+1)// Vertical and diagonal vacancies from top to bottom with earlied marked square in middle
 					{
-						vacanciesOnSameLine[0][0] = outerIndexes[outer];
-						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-						vacanciesOnSameLine[1][0] = innerIndexes[outer];
-						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							temp1 = mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ];
+							temp2 = mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ];
+							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = 
+							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
+							if( checkVictory() == LOSE )
+							{
+								cout << "B\n";
+								vacanciesOnSameLine[0][0] = outerIndexes[outer];
+								vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+								vacanciesOnSameLine[1][0] = innerIndexes[outer];
+								vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							}
+							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = temp1;
+							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = temp2;
 					}
 				}
 					
@@ -181,24 +202,44 @@ class TicTacToe
 				{
 					if(outerIndexes[outer] == outerIndexes[compareWith] && outerIndexes[outer] == earlierMarked[0]) //Horizontal vacancies from right to left
 					{
-						vacanciesOnSameLine[0][0] = outerIndexes[outer];
-						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-						vacanciesOnSameLine[1][0] = innerIndexes[outer];
-						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							vacanciesOnSameLine[0][0] = outerIndexes[outer];
+							vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+							vacanciesOnSameLine[1][0] = innerIndexes[outer];
+							vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
 					}
 					else if(outerIndexes[compareWith] == outerIndexes[outer]-1 && outerIndexes[compareWith] == earlierMarked[0]-2)// Vertical and diagonal vacancies from bottom to top
 					{
-						vacanciesOnSameLine[0][0] = outerIndexes[outer];
-						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-						vacanciesOnSameLine[1][0] = innerIndexes[outer];
-						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							temp1 = mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ];
+							temp2 = mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ];
+							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = 
+							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
+							if( checkVictory() == LOSE )
+							{
+								cout << "C\n";
+								vacanciesOnSameLine[0][0] = outerIndexes[outer];
+								vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+								vacanciesOnSameLine[1][0] = innerIndexes[outer];
+								vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							}
+							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = temp1;
+							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = temp2;
 					}
 					else if(outerIndexes[compareWith] == outerIndexes[outer]-2 && outerIndexes[compareWith] == earlierMarked[0]-1)// Vertical and diagonal vacancies from bottom to top when earlier marked square is in middle
 					{
-						vacanciesOnSameLine[0][0] = outerIndexes[outer];
-						vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-						vacanciesOnSameLine[1][0] = innerIndexes[outer];
-						vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							temp1 = mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ];
+							temp2 = mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ];
+							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = 
+							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
+							if( checkVictory() == LOSE )
+							{
+								cout << "D\n";
+								vacanciesOnSameLine[0][0] = outerIndexes[outer];
+								vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
+								vacanciesOnSameLine[1][0] = innerIndexes[outer];
+								vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							}
+							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = temp1;
+							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = temp2;
 					}
 				}
 					
