@@ -131,6 +131,8 @@ class TicTacToe
 		}
 		bool markOnSameLine()
 		{
+			vector<int> allVacanciesOuterIndexes; // All vacancies of all available lines(outer indexes)
+			vector<int> allVacanciesInnerIndexes; // All vacancies of all available lines(inner indexes)
 			int earlierMarked[2] {100, 100};
 			char temp1, temp2;
 			for(int outer = 0; outer < 3; outer++)
@@ -147,17 +149,17 @@ class TicTacToe
 				if(earlierMarked[0] != 100) break;
 			}
 			
-			int vacanciesOnSameLine[2][2] {{100, 100}, {100, 100}};
 			for(int outer = 0; outer < outerIndexes.size(); outer++) 
 			{
 				for(int compareWith = outer+1; compareWith < outerIndexes.size(); compareWith++)
 				{
 					if(outerIndexes[outer] == outerIndexes[compareWith] && outerIndexes[outer] == earlierMarked[0]) //Horizontal vacancies from left to right
 					{
-							vacanciesOnSameLine[0][0] = outerIndexes[outer];
-							vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-							vacanciesOnSameLine[1][0] = innerIndexes[outer];
-							vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+							cout << "A\n";
+							allVacanciesOuterIndexes.push_back(outerIndexes[outer]);
+							allVacanciesInnerIndexes.push_back(innerIndexes[outer]);
+							allVacanciesOuterIndexes.push_back(outerIndexes[compareWith]);
+							allVacanciesInnerIndexes.push_back(innerIndexes[compareWith]);
 					}
 					else if(outerIndexes[compareWith] == outerIndexes[outer]+1 && outerIndexes[compareWith] == earlierMarked[0]+2)// Vertical and diagonal vacancies from top to bottom
 					{
@@ -167,11 +169,11 @@ class TicTacToe
 							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
 							if( checkVictory() == LOSE )
 							{
-								cout << "A\n";
-								vacanciesOnSameLine[0][0] = outerIndexes[outer];
-								vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-								vacanciesOnSameLine[1][0] = innerIndexes[outer];
-								vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+								cout << "B\n";
+								allVacanciesOuterIndexes.push_back(outerIndexes[outer]);
+								allVacanciesInnerIndexes.push_back(innerIndexes[outer]);
+								allVacanciesOuterIndexes.push_back(outerIndexes[compareWith]);
+								allVacanciesInnerIndexes.push_back(innerIndexes[compareWith]);								
 							}
 							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = temp1;
 							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = temp2;
@@ -184,11 +186,11 @@ class TicTacToe
 							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
 							if( checkVictory() == LOSE )
 							{
-								cout << "B\n";
-								vacanciesOnSameLine[0][0] = outerIndexes[outer];
-								vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-								vacanciesOnSameLine[1][0] = innerIndexes[outer];
-								vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+								cout << "C\n";
+								allVacanciesOuterIndexes.push_back(outerIndexes[outer]);
+								allVacanciesInnerIndexes.push_back(innerIndexes[outer]);
+								allVacanciesOuterIndexes.push_back(outerIndexes[compareWith]);
+								allVacanciesInnerIndexes.push_back(innerIndexes[compareWith]);								
 							}
 							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = temp1;
 							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = temp2;
@@ -200,14 +202,7 @@ class TicTacToe
 			{
 				for(int compareWith = outer-1; compareWith >= 0; compareWith--)
 				{
-					if(outerIndexes[outer] == outerIndexes[compareWith] && outerIndexes[outer] == earlierMarked[0]) //Horizontal vacancies from right to left
-					{
-							vacanciesOnSameLine[0][0] = outerIndexes[outer];
-							vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-							vacanciesOnSameLine[1][0] = innerIndexes[outer];
-							vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
-					}
-					else if(outerIndexes[compareWith] == outerIndexes[outer]-1 && outerIndexes[compareWith] == earlierMarked[0]-2)// Vertical and diagonal vacancies from bottom to top
+					if(outerIndexes[compareWith] == outerIndexes[outer]-1 && outerIndexes[compareWith] == earlierMarked[0]-2)// Vertical and diagonal vacancies from bottom to top
 					{
 							temp1 = mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ];
 							temp2 = mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ];
@@ -215,48 +210,26 @@ class TicTacToe
 							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
 							if( checkVictory() == LOSE )
 							{
-								cout << "C\n";
-								vacanciesOnSameLine[0][0] = outerIndexes[outer];
-								vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-								vacanciesOnSameLine[1][0] = innerIndexes[outer];
-								vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
+								cout << "E\n";
+								allVacanciesOuterIndexes.push_back(outerIndexes[outer]);
+								allVacanciesInnerIndexes.push_back(innerIndexes[outer]);
+								allVacanciesOuterIndexes.push_back(outerIndexes[compareWith]);
+								allVacanciesInnerIndexes.push_back(innerIndexes[compareWith]);
 							}
 							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = temp1;
 							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = temp2;
 					}
-					else if(outerIndexes[compareWith] == outerIndexes[outer]-2 && outerIndexes[compareWith] == earlierMarked[0]-1)// Vertical and diagonal vacancies from bottom to top when earlier marked square is in middle
-					{
-							temp1 = mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ];
-							temp2 = mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ];
-							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = 
-							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
-							if( checkVictory() == LOSE )
-							{
-								cout << "D\n";
-								vacanciesOnSameLine[0][0] = outerIndexes[outer];
-								vacanciesOnSameLine[0][1] = outerIndexes[compareWith];
-								vacanciesOnSameLine[1][0] = innerIndexes[outer];
-								vacanciesOnSameLine[1][1] = innerIndexes[compareWith];
-							}
-							mSquareContents[ outerIndexes[outer] ][ innerIndexes[outer] ] = temp1;
-							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = temp2;
-					}
-				}
-					
+				}					
 			}
-			if( vacanciesOnSameLine[0][0] != 100 )
+			if( !allVacanciesOuterIndexes.empty() )
 			{
-				cout << "Vacancies on same line: ";
-				for(int i=0; i < 2; i++)
-					cout << "(" << vacanciesOnSameLine[0][i] << ", " << vacanciesOnSameLine[1][i] << ") ";
-				cout << '\n';
-				cout << "Total vacancies are: ";
-				for(int i = 0; i < outerIndexes.size(); i++)
-					cout << "(" << outerIndexes[i] << ", " << innerIndexes[i] << ") ";
+				cout << "All vacancies on all lines are: ";
+				for(int i = 0; i < allVacanciesOuterIndexes.size(); i++)
+					cout << "(" << allVacanciesOuterIndexes[i] << ", " << allVacanciesInnerIndexes[i] << ") ";
 				cout << '\n';
 				
-				int randomIndex = getRandomNumber( 0, 1 );
-				mSquareContents[vacanciesOnSameLine[0][randomIndex]][vacanciesOnSameLine[1][randomIndex]] = computerChar;
+				int randomIndex = getRandomNumber( 0, allVacanciesOuterIndexes.size()-1 );
+				mSquareContents[ allVacanciesOuterIndexes[randomIndex] ][ allVacanciesInnerIndexes[randomIndex] ] = computerChar;
 				return true;
 			}
 			return false;		
