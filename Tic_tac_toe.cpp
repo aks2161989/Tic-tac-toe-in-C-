@@ -28,8 +28,10 @@ class TicTacToe
 		vector<int> innerIndexes;
 		enum playerName { COMPUTER, PLAYER };
 		enum outcome { WIN, LOSE, DRAW }; //WIN: player wins, LOSE: player loses
-		enum chosenDifficulty { EASY, MEDIUM };
+		enum chosenDifficulty { EASY, MEDIUM, IMPOSSIBLE };
 		chosenDifficulty m_Difficulty;
+		vector<int> playerMovesOuterIndexes;
+		vector<int> playerMovesInnerIndexes;
 			
 	public:
 		TicTacToe( int difficulty = 1 )
@@ -234,6 +236,204 @@ class TicTacToe
 			}
 			return false;		
 		}
+		bool blockWinningStrategy()
+		{
+			for(int outer = 0; outer < 3; outer++) // First scan the grid to find out how many moves the player has made and save these moves in a vector
+			{
+				for(int inner = 0; inner < 3; inner++)
+				{
+					if(mSquareContents[outer][inner] == playerChar)
+					{
+						playerMovesOuterIndexes.push_back(outer);
+						playerMovesInnerIndexes.push_back(inner);
+					}	
+				}
+			}
+			
+			for(int index = 0; index < playerMovesOuterIndexes.size(); index++) // Scan the vector and remove any moves that have been stored repeatedly
+			{
+				for(int compareWith = index + 1; compareWith < playerMovesOuterIndexes.size(); compareWith++)
+				{
+					if(playerMovesOuterIndexes[index] == playerMovesOuterIndexes[compareWith] &&
+					   playerMovesInnerIndexes[index] == playerMovesInnerIndexes[compareWith])
+					   {
+						playerMovesOuterIndexes.erase( playerMovesOuterIndexes.begin() +compareWith );
+						playerMovesInnerIndexes.erase( playerMovesInnerIndexes.begin() +compareWith );
+					   }
+				}
+			}
+					
+			if(playerMovesOuterIndexes.size() > 2) //If more than 2 moves have been made by player, he/she cannot implement strategy anymore, or his strategy cannot be blocked anymore, so exit this function
+			{
+				playerMovesOuterIndexes.clear();
+				playerMovesInnerIndexes.clear();
+				return false;
+			}
+			
+			cout << "playerMovesOuterIndexes: ";
+			for(int i=0; i<playerMovesOuterIndexes.size(); i++)
+			{
+				cout << "(" << playerMovesOuterIndexes[i] << ", " << playerMovesOuterIndexes[i] << ") ";
+			}
+			cout << '\n';
+			
+			/* STRATEGY ONE: When player first move is the central square */
+			if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 1 )
+			{/* If player has marked the central square, mark a corner square... */
+				int cornerSquares[][2] = { {0, 0}, {2, 2}, {0, 2}, {2, 0} };
+				int randomIndex = getRandomNumber(0, 3);
+				if(playerMovesOuterIndexes.size() == 1)
+				{
+					mSquareContents[ cornerSquares[randomIndex][0] ][ cornerSquares[randomIndex][1] ] = computerChar;
+					return true;
+				}	
+				
+				if(playerMovesOuterIndexes.size() == 2)
+				{/* ...If player marks the other corner square of the diagonal in the next turn, mark any remaining corner square */
+					if( (playerMovesOuterIndexes[1] == 2 && playerMovesInnerIndexes[1] == 2) && 
+					    mSquareContents[0][0] == computerChar )
+					{
+						randomIndex = getRandomNumber(2, 3);
+						mSquareContents[ cornerSquares[randomIndex][0] ][ cornerSquares[randomIndex][1] ] = computerChar;
+						return true;
+					}
+					if( playerMovesOuterIndexes[1] == 2 && playerMovesInnerIndexes[1] == 0 && mSquareContents[0][2] == computerChar )
+					{
+						randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ cornerSquares[randomIndex][0] ][ cornerSquares[randomIndex][1] ] = computerChar;
+						return true;					
+					}
+					if( playerMovesOuterIndexes[1] == 0 && playerMovesInnerIndexes[1] == 0 && mSquareContents[2][2] == computerChar )
+					{
+						randomIndex = getRandomNumber(2, 3);
+						mSquareContents[ cornerSquares[randomIndex][0] ][ cornerSquares[randomIndex][1] ] = computerChar;
+						return true;					
+					}
+					if( playerMovesOuterIndexes[1] == 0 && playerMovesInnerIndexes[1] == 2 && mSquareContents[2][0] == computerChar )
+					{
+						randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ cornerSquares[randomIndex][0] ][ cornerSquares[randomIndex][1] ] = computerChar;					
+						return true;
+					}					
+				}
+			}
+			
+			/* STRATEGY TWO: When player's first move is a corner square */	 
+			if(playerMovesOuterIndexes.size() == 1 && playerMovesOuterIndexes[0] != 1 && playerMovesInnerIndexes[0] != 1) // Corner squares cannot have 1 as an outer or inner index
+			{/* If player has marked a corner square, mark the central square... */
+				mSquareContents[1][1] = computerChar;
+				return true;
+			}
+			else if( playerMovesOuterIndexes.size() == 2 && playerMovesOuterIndexes[1] != 1 && playerMovesInnerIndexes[1] != 1 && mSquareContents[1][1] == computerChar )
+			{/* ...If player marks diagonally opposite corner square in next turn, mark the central square of any side */
+				int centralSquaresOfSides[][2] = {{0, 1}, {1, 0}, {1, 2}, {2, 1}};
+				int randomIndex = getRandomNumber(0, 3);
+				mSquareContents[ centralSquaresOfSides[randomIndex][0] ][ centralSquaresOfSides[randomIndex][1] ] = computerChar;
+				return true;  		
+			}
+			
+			/* STRATEGY THREE: When player's first move is central square of any side */
+			if(playerMovesOuterIndexes.size() == 1)
+			{/* If player has marked a central square of any side, mark the central square... */
+				if( playerMovesOuterIndexes[0] == 0 && playerMovesInnerIndexes[0] == 1 )
+				{
+					mSquareContents[1][1] = computerChar;
+					return true;
+				}	
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 0 )
+				{
+					mSquareContents[1][1] = computerChar;
+					return true;
+				}	
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 2 )
+				{
+					mSquareContents[1][1] = computerChar;
+					return true;
+				}	
+				else if( playerMovesOuterIndexes[0] == 2 && playerMovesInnerIndexes[0] == 1 )
+				{
+					mSquareContents[1][1] = computerChar;
+					return true;
+				}	
+			}
+			else if(playerMovesOuterIndexes.size() == 2)
+			{/* ...and if player next marks a central square of a side making an L shape with his/her earlier move, mark the corner square between player's two moves */
+				if( playerMovesOuterIndexes[0] == 0 && playerMovesInnerIndexes[0] == 1 &&
+				playerMovesOuterIndexes[1] == 1 && playerMovesInnerIndexes[1] == 0 )
+				{
+					mSquareContents[0][0] = computerChar;
+					return true;
+				}
+				else if( playerMovesOuterIndexes[0] == 0 && playerMovesInnerIndexes[0] == 1 &&
+				playerMovesOuterIndexes[1] == 1 && playerMovesInnerIndexes[1] == 2 )
+				{
+					mSquareContents[0][2] = computerChar;
+					return true;
+				}					
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 0 &&
+				playerMovesOuterIndexes[1] == 0 && playerMovesInnerIndexes[1] == 1 )
+				{
+					mSquareContents[0][0] = computerChar;
+					return true;
+				}
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 0 &&
+				playerMovesOuterIndexes[1] == 2 && playerMovesInnerIndexes[1] == 1 )
+				{
+					mSquareContents[2][0] = computerChar;
+					return true;
+				}					
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 2 && 
+				playerMovesOuterIndexes[1] == 0 && playerMovesInnerIndexes[1] == 1 )
+				{
+					mSquareContents[0][2] = computerChar;
+					return true;
+				}
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 2 && 
+				playerMovesOuterIndexes[1] == 2 && playerMovesInnerIndexes[1] == 1 )
+				{
+					mSquareContents[2][2] = computerChar;
+					return true;
+				}					
+				else if( playerMovesOuterIndexes[0] == 2 && playerMovesInnerIndexes[0] == 1 && 
+				playerMovesOuterIndexes[1] == 1 && playerMovesInnerIndexes[1] == 0 )
+				{
+					mSquareContents[2][0] = computerChar;
+					return true;
+				}
+				else if( playerMovesOuterIndexes[0] == 2 && playerMovesInnerIndexes[0] == 1 && 
+				playerMovesOuterIndexes[1] == 1 && playerMovesInnerIndexes[1] == 2 )
+				{
+					mSquareContents[2][2] = computerChar;
+					return true;
+				}					
+			}			
+			return false;
+		}
+		void levelImpossible()
+		{
+			/* Priority 1: If computer can win by a single move, make that move*/
+			if( checkPotentialVictory( COMPUTER ) )
+				return;
+			
+			/* Priority 2: If player can win by a single move, block that move*/
+			if( checkPotentialVictory( PLAYER ) )
+				return;
+				
+			/* Priority 3: If player has started\can start a winning strategy, block it*/
+			if( blockWinningStrategy() )
+				return;
+			
+			/* Priority 4: If computer can start\continue a winning strategy, do it*/			
+//			applyWinningStrategy();
+			
+			/* Priority 5: If computer has marked a single square earlier, continue marking on the same line to win in future turns*/
+			if( markOnSameLine() )
+				return;
+			
+			/* Priority 6: Mark a random square*/
+			int randomIndex = getRandomNumber( 0, outerIndexes.size() - 1 );
+			mSquareContents[ outerIndexes[randomIndex] ][ innerIndexes[randomIndex] ] = computerChar;			
+		}
 		void levelMedium()
 		{
 			/*First check if computer can win in next turn*/
@@ -269,10 +469,13 @@ class TicTacToe
 			switch( m_Difficulty )
 			{
 			case EASY:
-				this->levelEasy();
+				levelEasy();
 				break;
 			case MEDIUM:
-				this->levelMedium();
+				levelMedium();
+				break;
+			case IMPOSSIBLE:
+				levelImpossible();
 			}	 	
 		}
 		outcome checkVictory() 
@@ -436,9 +639,9 @@ int main()
 	srand(static_cast<unsigned int>(time(0)));
 	char difficulty;
 	int intDifficulty;
-	while( difficulty != 'E' && difficulty != 'e' && difficulty != 'M' && difficulty != 'm')
+	while( difficulty != 'E' && difficulty != 'e' && difficulty != 'M' && difficulty != 'm' && difficulty != 'I' && difficulty != 'i')
 	{
-		cout << "Choose a difficulty level (E-EASY, M-MEDIUM): ";
+		cout << "Choose a difficulty level (E-EASY, M-MEDIUM, I-IMPOSSIBLE): ";
 		cin >> difficulty;
 		cin.ignore(32767, '\n');
 		if( cin.fail() )
@@ -447,10 +650,12 @@ int main()
 			cin.ignore(32767, '\n');
 		}
 	}
-	if( difficulty == 'E'|| difficulty == 'e')
+	if( difficulty == 'E'|| difficulty == 'e' )
 		intDifficulty = 0;
-	else if( difficulty == 'M' || difficulty == 'm')
+	else if( difficulty == 'M' || difficulty == 'm' )
 		intDifficulty = 1;
+	else if( difficulty == 'I' || difficulty == 'i' )
+		intDifficulty = 2;
 	TicTacToe t ( intDifficulty );
 		
 	try
