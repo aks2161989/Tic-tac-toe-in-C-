@@ -325,13 +325,142 @@ class TicTacToe
 				return true;
 			}
 			else if( playerMovesOuterIndexes.size() == 2 && playerMovesOuterIndexes[1] != 1 && playerMovesInnerIndexes[1] != 1 && mSquareContents[1][1] == computerChar )
-			{/* ...If player marks diagonally opposite corner square in next turn, mark the central square of any side */
+			{/* ...If player marks diagonally opposite corner square in next turn, mark the central square of any side or... */
 				int centralSquaresOfSides[][2] = {{0, 1}, {1, 0}, {1, 2}, {2, 1}};
 				int randomIndex = getRandomNumber(0, 3);
 				mSquareContents[ centralSquaresOfSides[randomIndex][0] ][ centralSquaresOfSides[randomIndex][1] ] = computerChar;
 				return true;  		
 			}
-			
+			else if( playerMovesOuterIndexes.size() == 2 && mSquareContents[1][1] == computerChar )
+			{/* ...If player marks the central square of a side 2 rows or 2 columns away from player's first move, mark any remaining square of that side*/
+				if( playerMovesOuterIndexes[1] == playerMovesOuterIndexes[0]+2 && playerMovesInnerIndexes[1] == playerMovesInnerIndexes[0]+1 ) // 2 rows down and one column right
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < outerIndexes.size(); index++ ) // Is a vacancy available in the same row as player's second move?
+					{
+						if( outerIndexes[index] == playerMovesOuterIndexes[1] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same row the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}
+				else if( playerMovesOuterIndexes[1] == playerMovesOuterIndexes[0]-2 && playerMovesInnerIndexes[1] == playerMovesInnerIndexes[0]-1 ) // 2 rows up and 1 column left
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < outerIndexes.size(); index++ ) //Is there a vacancy on the same row as player's second move?
+					{
+						if( outerIndexes[index] == playerMovesOuterIndexes[1] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same row the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}
+
+				else if( playerMovesOuterIndexes[1] == playerMovesOuterIndexes[0]+1 && playerMovesInnerIndexes[1] == playerMovesInnerIndexes[0]+2 ) // 1 row below and 2 columns right  
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < innerIndexes.size(); index++ ) //Is there a vacancy on the same column as player's second move?
+					{
+						if( innerIndexes[index] == playerMovesInnerIndexes[1] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same column the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				
+				}				 
+				else if( playerMovesOuterIndexes[1] == playerMovesOuterIndexes[0]-1 && playerMovesInnerIndexes[1] == playerMovesInnerIndexes[0]-2 ) // 1 row above and 2 columns left
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < innerIndexes.size(); index++ ) //Is there a vacancy on the same column as player's second move?
+					{
+						if( innerIndexes[index] == playerMovesInnerIndexes[1] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same column the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				
+				}
+				else if( playerMovesOuterIndexes[1] == playerMovesOuterIndexes[0]-1 && playerMovesInnerIndexes[1] == playerMovesInnerIndexes[0]+2 ) // 1 row above and 2 columns right 
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < innerIndexes.size(); index++ ) //Is there a vacancy on the same column as player's second move?
+					{
+						if( innerIndexes[index] == playerMovesInnerIndexes[1] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same column the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				
+				}
+				else if( playerMovesOuterIndexes[1] == playerMovesOuterIndexes[0]-2 && playerMovesInnerIndexes[1] == playerMovesInnerIndexes[0]+1 ) // 2 rows above and 1 column right
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < outerIndexes.size(); index++ ) //Is there a vacancy on the same row as player's second move?
+					{
+						if( outerIndexes[index] == playerMovesOuterIndexes[1] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same row the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				
+				}
+				else if( playerMovesOuterIndexes[1] == playerMovesOuterIndexes[0]+1 && playerMovesInnerIndexes[1] == playerMovesInnerIndexes[0]-2 ) // 1 row below and 2 columns left
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < innerIndexes.size(); index++ ) //Is there a vacancy on the same column as player's second move?
+					{
+						if( innerIndexes[index] == playerMovesInnerIndexes[1] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same column the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				
+				}
+				else if( playerMovesOuterIndexes[1] == playerMovesOuterIndexes[0]+2 && playerMovesInnerIndexes[1] == playerMovesInnerIndexes[0]-1 ) // 2 rows down and one column left
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < outerIndexes.size(); index++ ) // Is a vacancy available in the same row as player's second move?
+					{
+						if( outerIndexes[index] == playerMovesOuterIndexes[1] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same row the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}
+												 										 									 				
+			}
 			/* STRATEGY THREE: When player's first move is central square of any side */
 			if(playerMovesOuterIndexes.size() == 1)
 			{/* If player has marked a central square of any side, mark the central square... */
