@@ -157,7 +157,6 @@ class TicTacToe
 				{
 					if(outerIndexes[outer] == outerIndexes[compareWith] && outerIndexes[outer] == earlierMarked[0]) //Horizontal vacancies from left to right
 					{
-							cout << "A\n";
 							allVacanciesOuterIndexes.push_back(outerIndexes[outer]);
 							allVacanciesInnerIndexes.push_back(innerIndexes[outer]);
 							allVacanciesOuterIndexes.push_back(outerIndexes[compareWith]);
@@ -171,7 +170,6 @@ class TicTacToe
 							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
 							if( checkVictory() == LOSE )
 							{
-								cout << "B\n";
 								allVacanciesOuterIndexes.push_back(outerIndexes[outer]);
 								allVacanciesInnerIndexes.push_back(innerIndexes[outer]);
 								allVacanciesOuterIndexes.push_back(outerIndexes[compareWith]);
@@ -188,7 +186,6 @@ class TicTacToe
 							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
 							if( checkVictory() == LOSE )
 							{
-								cout << "C\n";
 								allVacanciesOuterIndexes.push_back(outerIndexes[outer]);
 								allVacanciesInnerIndexes.push_back(innerIndexes[outer]);
 								allVacanciesOuterIndexes.push_back(outerIndexes[compareWith]);
@@ -212,7 +209,6 @@ class TicTacToe
 							mSquareContents[ outerIndexes[compareWith] ][ innerIndexes[compareWith] ] = computerChar;
 							if( checkVictory() == LOSE )
 							{
-								cout << "E\n";
 								allVacanciesOuterIndexes.push_back(outerIndexes[outer]);
 								allVacanciesInnerIndexes.push_back(innerIndexes[outer]);
 								allVacanciesOuterIndexes.push_back(outerIndexes[compareWith]);
@@ -225,11 +221,6 @@ class TicTacToe
 			}
 			if( !allVacanciesOuterIndexes.empty() )
 			{
-				cout << "All vacancies on all lines are: ";
-				for(int i = 0; i < allVacanciesOuterIndexes.size(); i++)
-					cout << "(" << allVacanciesOuterIndexes[i] << ", " << allVacanciesInnerIndexes[i] << ") ";
-				cout << '\n';
-				
 				int randomIndex = getRandomNumber( 0, allVacanciesOuterIndexes.size()-1 );
 				mSquareContents[ allVacanciesOuterIndexes[randomIndex] ][ allVacanciesInnerIndexes[randomIndex] ] = computerChar;
 				return true;
@@ -269,13 +260,6 @@ class TicTacToe
 				playerMovesInnerIndexes.clear();
 				return false;
 			}
-			
-			cout << "playerMovesOuterIndexes: ";
-			for(int i=0; i<playerMovesOuterIndexes.size(); i++)
-			{
-				cout << "(" << playerMovesOuterIndexes[i] << ", " << playerMovesOuterIndexes[i] << ") ";
-			}
-			cout << '\n';
 			
 			/* STRATEGY ONE: When player first move is the central square */
 			if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 1 )
@@ -324,14 +308,14 @@ class TicTacToe
 				mSquareContents[1][1] = computerChar;
 				return true;
 			}
-			else if( playerMovesOuterIndexes.size() == 2 && playerMovesOuterIndexes[1] != 1 && playerMovesInnerIndexes[1] != 1 && mSquareContents[1][1] == computerChar )
+			else if( playerMovesOuterIndexes.size() == 2 && playerMovesOuterIndexes[1] != 1 && playerMovesInnerIndexes[1] != 1 && mSquareContents[1][1] == computerChar && playerMovesOuterIndexes[0] != 1 && playerMovesInnerIndexes[0] != 1)
 			{/* ...If player marks diagonally opposite corner square in next turn, mark the central square of any side or... */
 				int centralSquaresOfSides[][2] = {{0, 1}, {1, 0}, {1, 2}, {2, 1}};
 				int randomIndex = getRandomNumber(0, 3);
 				mSquareContents[ centralSquaresOfSides[randomIndex][0] ][ centralSquaresOfSides[randomIndex][1] ] = computerChar;
 				return true;  		
 			}
-			else if( playerMovesOuterIndexes.size() == 2 && mSquareContents[1][1] == computerChar )
+			else if( playerMovesOuterIndexes.size() == 2 && mSquareContents[1][1] == computerChar && playerMovesOuterIndexes[0] != 1 && playerMovesInnerIndexes[0] != 1)
 			{/* ...If player marks the central square of a side 2 rows or 2 columns away from player's first move, mark any remaining square of that side*/
 				if( playerMovesOuterIndexes[1] == playerMovesOuterIndexes[0]+2 && playerMovesInnerIndexes[1] == playerMovesInnerIndexes[0]+1 ) // 2 rows down and one column right
 				{
@@ -486,7 +470,7 @@ class TicTacToe
 				}	
 			}
 			else if(playerMovesOuterIndexes.size() == 2)
-			{/* ...and if player next marks a central square of a side making an L shape with his/her earlier move, mark the corner square between player's two moves */
+			{/* ...and if player next marks a central square of a side making an L shape with his/her earlier move, mark the corner square between player's two moves OR... */
 				if( playerMovesOuterIndexes[0] == 0 && playerMovesInnerIndexes[0] == 1 &&
 				playerMovesOuterIndexes[1] == 1 && playerMovesInnerIndexes[1] == 0 )
 				{
@@ -534,8 +518,138 @@ class TicTacToe
 				{
 					mSquareContents[2][2] = computerChar;
 					return true;
+				}
+				
+				/* ...if player in second turn marks a corner square 2 rows or 2 columns away from the first move, mark any of the 2 vacant squares on same row/column of player's first move */
+				if( playerMovesOuterIndexes[0] == 0 && playerMovesInnerIndexes[0] == 1 &&
+				playerMovesOuterIndexes[1] == 2 && playerMovesInnerIndexes[1] == 0 )
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < outerIndexes.size(); index++ ) //Is there a vacancy on the same row as player's first move?
+					{
+						if( outerIndexes[index] == playerMovesOuterIndexes[0] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same row the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}
+				else if( playerMovesOuterIndexes[0] == 0 && playerMovesInnerIndexes[0] == 1 &&
+				playerMovesOuterIndexes[1] == 2 && playerMovesInnerIndexes[1] == 2 )
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < outerIndexes.size(); index++ ) //Is there a vacancy on the same row as player's first move?
+					{
+						if( outerIndexes[index] == playerMovesOuterIndexes[0] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same row the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
 				}					
-			}			
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 0 &&
+				playerMovesOuterIndexes[1] == 0 && playerMovesInnerIndexes[1] == 2 )
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < innerIndexes.size(); index++ ) //Is there a vacancy on the same column as player's first move?
+					{
+						if( innerIndexes[index] == playerMovesInnerIndexes[0] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same column the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 0 &&
+				playerMovesOuterIndexes[1] == 2 && playerMovesInnerIndexes[1] == 2 )
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < innerIndexes.size(); index++ ) //Is there a vacancy on the same column as player's first move?
+					{
+						if( innerIndexes[index] == playerMovesInnerIndexes[0] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same column the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}					
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 2 && 
+				playerMovesOuterIndexes[1] == 0 && playerMovesInnerIndexes[1] == 0 )
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < innerIndexes.size(); index++ ) //Is there a vacancy on the same column as player's first move?
+					{
+						if( innerIndexes[index] == playerMovesInnerIndexes[0] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same column the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}
+				else if( playerMovesOuterIndexes[0] == 1 && playerMovesInnerIndexes[0] == 2 && 
+				playerMovesOuterIndexes[1] == 2 && playerMovesInnerIndexes[1] == 0 )
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < innerIndexes.size(); index++ ) //Is there a vacancy on the same column as player's first move?
+					{
+						if( innerIndexes[index] == playerMovesInnerIndexes[0] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same column the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}					
+				else if( playerMovesOuterIndexes[0] == 2 && playerMovesInnerIndexes[0] == 1 && 
+				playerMovesOuterIndexes[1] == 0 && playerMovesInnerIndexes[1] == 0 )
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < outerIndexes.size(); index++ ) //Is there a vacancy on the same row as player's first move?
+					{
+						if( outerIndexes[index] == playerMovesOuterIndexes[0] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same row the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}
+				else if( playerMovesOuterIndexes[0] == 2 && playerMovesInnerIndexes[0] == 1 && 
+				playerMovesOuterIndexes[1] == 0 && playerMovesInnerIndexes[1] == 2 )
+				{
+					vector<vector<int>> vacantSquaresOnSameLine;
+					for( size_t index = 0; index < outerIndexes.size(); index++ ) //Is there a vacancy on the same row as player's first move?
+					{
+						if( outerIndexes[index] == playerMovesOuterIndexes[0] )
+							vacantSquaresOnSameLine.push_back( { outerIndexes[index], innerIndexes[index] } );
+					}
+					if(	vacantSquaresOnSameLine.size() == 2 ) //If 2 vacancies exist on the same row the player has marked the central square of, mark a random square among them
+					{
+						int randomIndex = getRandomNumber(0, 1);
+						mSquareContents[ vacantSquaresOnSameLine[randomIndex][0] ][ vacantSquaresOnSameLine[randomIndex][1] ] = computerChar; 
+						return true;
+					}
+				}														
+			}
 			return false;
 		}
 		void levelImpossible()
@@ -576,13 +690,7 @@ class TicTacToe
 			if( markOnSameLine() )
 				return;
 			
-			/*If none of the above is applicable, just mark a square randomly*/	
-			cout << "RANDOM\n";
-			cout << "Total vacancies are: ";
-			for(int i = 0; i < outerIndexes.size(); i++)
-				cout << "(" << outerIndexes[i] << ", " << innerIndexes[i] << ") ";
-			cout << '\n';
-			
+			/*If none of the above is applicable, just mark a square randomly*/				
 			int randomIndex = getRandomNumber(0, outerIndexes.size() - 1);
 			mSquareContents[ outerIndexes[randomIndex] ][ innerIndexes[randomIndex] ] = computerChar;
 		}
